@@ -1,14 +1,23 @@
 module OpenStack
-  module HeatCfn
-    class Connection
+  module Heat
+    class Connection < OpenStack::Connection
 
-      attr_accessor   :connection
-      attr_reader     :stacks
+      def self.create options = {:retry_auth => true}
+        @@heat_conn = new options
+      end
 
-      def initialize(connection)
-        @connection = connection
-        OpenStack::Authentication.init(@connection)
-        @stack_path = "#{@connection.authtenant_name}/stacks"
+      def self.heat_conn
+        @@heat_conn
+      end
+
+      attr_reader :tenant_id
+      attr_reader :service_uri
+      attr_reader :service_type
+
+      def initialize options
+        options.merge! :service_name => 'heat', :service_type => 'orchestration'
+        super
+        OpenStack::Authentication.init self
       end
 
       # Returns true if the authentication was successful and returns false otherwise.
@@ -16,24 +25,8 @@ module OpenStack
       #   cs.authok?
       #   => true
       def authok?
-        @connection.authok
+        authok
       end
-
-
-
-
-
-
-
-
-      def delete_stack(stack_id)
-        get_stack(stack_id).delete
-      end
-
-      private
-
-
-
 
     end
 

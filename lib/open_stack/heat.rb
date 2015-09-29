@@ -15,15 +15,17 @@
 #
 # will return a handle to the object-storage service swift. Alternatively, passing
 # :service_type=>"compute" will return a handle to the compute service nova.
+require 'rubygems'
+require 'net/http'
+require 'net/https'
+require 'openstack'
+require 'uri'
+require 'json'
+require 'date'
+require 'pry'
+require 'pp'
 
 module OpenStack::Heat
-  require 'rubygems'
-  require 'net/http'
-  require 'net/https'
-  require 'openstack'
-  require 'uri'
-  require 'json'
-  require 'date'
 
   unless "".respond_to? :each_char
     require "jcode"
@@ -31,6 +33,7 @@ module OpenStack::Heat
   end
 
   $:.unshift(File.dirname(__FILE__))
+
   Dir.glob( File.dirname(__FILE__) + '/heat/*', &method(:require))
 
 end

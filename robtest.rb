@@ -1,6 +1,8 @@
 #!/Users/rsweet/.rbenv/shims/ruby
 
+require 'pp'
 require 'net/http'
+
 module Net
   class HTTP
     alias_method '__initialize__', 'initialize'
@@ -13,13 +15,12 @@ module Net
   end
 end
 
-require './lib/openstack'
-require 'pp'
+require './lib/open_stack/heat'
 
-vol_os = OpenStack::Connection.create :username     => "admin",
-                                      :api_key      => "osnodeCL3100",
-                                      :auth_url     => "http://10.201.10.12:35357/v2.0/",
-                                      :authtenant   => "demo",
-                                      :service_type => "cloudformation"
+OpenStack::Heat::Connection.create  :username    => "admin",
+                                    :api_key     => "osnodeCL3100",
+                                    :auth_url    => "http://10.201.10.12:35357/v2.0/",
+                                    :authtenant  => "demo"
 
-pp vol_os
+stacks = OpenStack::Heat::Stack.stacks
+binding.pry
