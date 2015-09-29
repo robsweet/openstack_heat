@@ -16,17 +16,17 @@ module OpenStack
         #require params:  {:display_name, :size}
         #optional params: {:display_description, :metadata=>{:key=>val, ...}, :availability_zone, :stack_type }
         #returns OpenStack::Volume::Volume object
-        def create options
+        def create data
           heat_conn = OpenStack::Heat::Connection.heat_conn
           # raise OpenStack::Exception::MissingArgument, ":display_name and :size must be specified to create a stack" unless (options[:display_name] && options[:size])
-          data = JSON.generate :stack => options
+
           response = heat_conn.csreq "POST",
-                                       heat_conn.service_uri.host,
+                                       heat_conn.service_host,
                                        "/stacks",
-                                       heat_conn.service_uri.port,
-                                       heat_conn.service_uri.scheme,
+                                       heat_conn.service_port,
+                                       heat_conn.service_scheme,
                                        {'content-type' => 'application/json'},
-                                       data
+                                       JSON.generate(data.merge :tenant_id => heat_conn.tenant_id)
 
           OpenStack::Exception.raise_exception(response) unless response.code.match(/^20.$/)
           stack_info = JSON.parse(response.body)["stack"]
